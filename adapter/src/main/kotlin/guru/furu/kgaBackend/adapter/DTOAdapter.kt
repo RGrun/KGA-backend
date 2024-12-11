@@ -1,10 +1,14 @@
 package guru.furu.kgaBackend.adapter
 
-import guru.furu.kgaBackend.client.dto.AccountDTO
-import guru.furu.kgaBackend.client.dto.NewAccountDTO
-import guru.furu.kgaBackend.client.dto.NewCommentDTO
-import guru.furu.kgaBackend.client.dto.NewImageDTO
+import guru.furu.kgaBackend.client.dto.incoming.NewAccountDTO
+import guru.furu.kgaBackend.client.dto.incoming.NewCommentDTO
+import guru.furu.kgaBackend.client.dto.incoming.NewImageDTO
+import guru.furu.kgaBackend.client.dto.outgoing.AccountDTO
+import guru.furu.kgaBackend.client.dto.outgoing.CommentDTO
+import guru.furu.kgaBackend.client.dto.outgoing.TagDTO
 import guru.furu.kgaBackend.domain.nodes.Account
+import guru.furu.kgaBackend.domain.nodes.Comment
+import guru.furu.kgaBackend.domain.nodes.Tag
 import guru.furu.kgaBackend.domain.nodes.incoming.NewAccount
 import guru.furu.kgaBackend.domain.nodes.incoming.NewComment
 import guru.furu.kgaBackend.domain.nodes.incoming.NewImage
@@ -37,4 +41,19 @@ fun NewCommentDTO.toDomain(): NewComment =
         authorId = UUID.fromString(this.authorId),
         onImageId = UUID.fromString(onImageId),
         text = this.text,
+    )
+
+fun Comment.toDTO(): CommentDTO =
+    CommentDTO(
+        id = this.id.toString(),
+        authorId = this.authorId.toString(),
+        onImageId = this.onImageId.toString(),
+        text = this.text,
+        date = this.date.epochSeconds,
+    )
+
+fun Tag.toDTO(): TagDTO =
+    TagDTO(
+        id = this.id.toString(),
+        title = this.title,
     )

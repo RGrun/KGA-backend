@@ -3,17 +3,17 @@ package guru.furu.kgaBackend.api.routes
 import guru.furu.kgaBackend.adapter.fs.ImagesFilesystemAccess
 import guru.furu.kgaBackend.adapter.nodeaccess.ImagesAccess
 import guru.furu.kgaBackend.adapter.toDomain
-import guru.furu.kgaBackend.client.dto.NewImageDTO
+import guru.furu.kgaBackend.client.dto.incoming.NewImageDTO
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
-import io.ktor.http.content.streamProvider
 import io.ktor.server.application.Application
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.respond
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import kotlinx.serialization.json.Json
 import java.io.ByteArrayOutputStream
 
@@ -23,6 +23,7 @@ fun Application.imageManagementRoutes(
 ) {
     routing {
         route("/images") {
+            // TODO support adding tags during upload
             post("/upload") {
                 // retrieve all multipart data (suspending)
                 val multipart = call.receiveMultipart()
@@ -36,7 +37,7 @@ fun Application.imageManagementRoutes(
                         fileName = part.originalFileName!!
 
                         // use InputStream from part to save file
-                        part.streamProvider().use { inputStream ->
+                        part.provider().toInputStream().use { inputStream ->
                             // copy the stream to the file with buffering
                             outputStream.buffered().use {
                                 // note that this is blocking

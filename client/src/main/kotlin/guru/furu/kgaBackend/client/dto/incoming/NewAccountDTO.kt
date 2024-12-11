@@ -1,4 +1,4 @@
-package guru.furu.kgaBackend.client.dto
+package guru.furu.kgaBackend.client.dto.incoming
 
 import kotlinx.serialization.Serializable
 

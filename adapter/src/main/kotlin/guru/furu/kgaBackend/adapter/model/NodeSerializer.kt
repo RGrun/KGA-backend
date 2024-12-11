@@ -18,4 +18,10 @@ interface NodeSerializer {
     ): String
 
     suspend fun getNodeQueryById(id: UUID): String
+
+    suspend fun serializeGetConnectedComponents(
+        id: UUID,
+        relationshipType: RelationshipType,
+        reverse: Boolean = false,
+    ): String
 }

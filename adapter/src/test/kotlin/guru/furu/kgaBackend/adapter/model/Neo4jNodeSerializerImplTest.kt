@@ -1,7 +1,7 @@
 package guru.furu.kgaBackend.adapter.model
 
 import guru.furu.kgaBackend.adapter.toDomain
-import guru.furu.kgaBackend.client.dto.NewAccountDTO
+import guru.furu.kgaBackend.client.dto.incoming.NewAccountDTO
 import guru.furu.kgaBackend.domain.nodes.Account
 import guru.furu.kgaBackend.domain.nodes.Auth
 import kotlinx.coroutines.runBlocking

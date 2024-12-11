@@ -3,7 +3,7 @@ package guru.furu.kgaBackend.api.routes
 import guru.furu.kgaBackend.adapter.nodeaccess.AccountAccess
 import guru.furu.kgaBackend.adapter.toAccountDTO
 import guru.furu.kgaBackend.adapter.toDomain
-import guru.furu.kgaBackend.client.dto.NewAccountDTO
+import guru.furu.kgaBackend.client.dto.incoming.NewAccountDTO
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.request.receive

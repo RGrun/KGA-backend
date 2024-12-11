@@ -51,6 +51,18 @@ class Neo4jNodeSerializerImpl : NodeSerializer {
         return "MATCH (n {id: '$id'}) return n"
     }
 
+    override suspend fun serializeGetConnectedComponents(
+        id: UUID,
+        relationshipType: RelationshipType,
+        reverse: Boolean,
+    ): String {
+        return if (reverse) {
+            "MATCH (n {id: '$id'})<-[${relationshipType.serValue}]-(connected) return n"
+        } else {
+            "MATCH (n {id: '$id'})-[${relationshipType.serValue}]->(connected) return connected"
+        }
+    }
+
     private fun serializeAccount(acct: Account): QueryNamePair {
         val propsStr =
             buildString {
@@ -78,6 +90,8 @@ class Neo4jNodeSerializerImpl : NodeSerializer {
         val propsStr =
             buildString {
                 append("id: '${comment.id}', ")
+                append("authorId: '${comment.authorId}', ")
+                append("onImageId: '${comment.onImageId}', ")
                 append("text: '${comment.text}', ")
                 append("date: ${comment.date.epochSeconds}")
             }

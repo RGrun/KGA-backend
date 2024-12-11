@@ -7,5 +7,5 @@ import java.util.UUID
 interface ImagesAccess {
     suspend fun recordNewImage(newImage: NewImage)
 
-    suspend fun fetchImageInformation(imageId: UUID): Image
+    suspend fun fetchImageDetails(imageId: UUID): Image
 }

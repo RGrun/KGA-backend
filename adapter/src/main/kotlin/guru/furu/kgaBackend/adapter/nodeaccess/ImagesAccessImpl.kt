@@ -25,7 +25,5 @@ class ImagesAccessImpl(
         databaseAccess.createWithRelationship(uploaderAccount, imageRecord, RelationshipType.UPLOADED)
     }
 
-    override suspend fun fetchImageInformation(imageId: UUID): Image {
-        TODO("Not yet implemented")
-    }
+    override suspend fun fetchImageDetails(imageId: UUID): Image = databaseAccess.loadImageById(imageId)
 }

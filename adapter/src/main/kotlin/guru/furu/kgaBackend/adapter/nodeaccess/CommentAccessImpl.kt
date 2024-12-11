@@ -26,4 +26,8 @@ class CommentAccessImpl(
         databaseAccess.createWithRelationship(author, comment, RelationshipType.COMMENTED)
         databaseAccess.createWithRelationship(image, comment, RelationshipType.HAS_COMMENT)
     }
+
+    override suspend fun getCommentsForImage(imageId: UUID): List<Comment> {
+        return databaseAccess.loadCommentsForImage(imageId)
+    }
 }

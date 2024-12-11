@@ -1,4 +1,4 @@
-package guru.furu.kgaBackend.client.dto
+package guru.furu.kgaBackend.client.dto.outgoing
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable

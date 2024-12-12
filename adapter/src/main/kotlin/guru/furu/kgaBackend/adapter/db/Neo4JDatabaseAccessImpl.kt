@@ -30,27 +30,55 @@ class Neo4JDatabaseAccessImpl(
         )
 
     override suspend fun saveNode(node: Node) {
-        val query = serializer.serializeCreateNode(node).query
+        val query = serializer.serializeUpsertNode(node).query
 
         database.session().use {
             it.run(query)
         }
     }
 
-    override suspend fun loadImageById(id: UUID): Image {
+    override suspend fun saveNodesBulk(nodes: List<Node>) {
+        if (nodes.isEmpty()) {
+            return
+        }
+
+        val bulkCreateQuery =
+            buildString {
+                nodes.forEach {
+                    appendLine(serializer.serializeUpsertNode(it))
+                }
+            }
+
+        database.session().use {
+            it.run(bulkCreateQuery)
+        }
+    }
+
+    override suspend fun createImageWithTags(
+        image: Image,
+        tags: List<Tag>,
+    ) {
+        val query = serializer.serializeWithRelationship(image, tags, RelationshipType.HAS_TAG)
+
+        database.session().use {
+            it.run(query)
+        }
+    }
+
+    override suspend fun loadImageById(nodeId: UUID): Image {
         val className = Image::class.simpleName ?: error("Could not get class name!")
-        val query = serializer.serializeMatchQuery(className, "id: '$id'")
+        val query = serializer.serializeMatchQuery(className, "nodeId: '$nodeId'")
 
         return loadImageByQueryString(query)
     }
 
-    override suspend fun loadTagById(id: UUID): Tag {
-        val query = serializer.getNodeQueryById(id)
+    override suspend fun loadTagById(nodeId: UUID): Tag {
+        val query = serializer.getNodeQueryById(nodeId)
         return loadTags(query).first()
     }
 
-    override suspend fun loadCommentById(id: UUID): Comment {
-        val query = serializer.getNodeQueryById(id)
+    override suspend fun loadCommentById(nodeId: UUID): Comment {
+        val query = serializer.getNodeQueryById(nodeId)
         return loadComments(query).first()
     }
 
@@ -60,16 +88,16 @@ class Neo4JDatabaseAccessImpl(
         to: Node,
         type: RelationshipType,
     ) {
-        val query = serializer.serializeWithRelationship(from, to, type)
+        val query = serializer.serializeWithRelationship(from, listOf(to), type)
 
         database.session().use {
             it.run(query)
         }
     }
 
-    override suspend fun loadAccountById(id: UUID): Account {
+    override suspend fun loadAccountById(nodeId: UUID): Account {
         val className = Account::class.simpleName ?: error("Could not get class name!")
-        val query = serializer.serializeMatchQuery(className, "id: '$id'")
+        val query = serializer.serializeMatchQuery(className, "nodeId: '$nodeId'")
 
         return loadAccountByQueryString(query)
     }
@@ -105,7 +133,7 @@ class Neo4JDatabaseAccessImpl(
                     val node = field.value().asNode()
                     tagList.add(
                         Tag(
-                            id = UUID.fromString(node["id"].asString()),
+                            nodeId = UUID.fromString(node["nodeId"].asString()),
                             title = node["title"].asString(),
                         ),
                     )
@@ -130,7 +158,7 @@ class Neo4JDatabaseAccessImpl(
                     val node = field.value().asNode()
                     commentList.add(
                         Comment(
-                            id = UUID.fromString(node["id"].asString()),
+                            nodeId = UUID.fromString(node["nodeId"].asString()),
                             authorId = UUID.fromString(node["authorId"].asString()),
                             onImageId = UUID.fromString(node["onImageId"].asString()),
                             text = node["text"].asString(),
@@ -156,13 +184,17 @@ class Neo4JDatabaseAccessImpl(
                 // should only be one result
                 val fields = rec.fields()[0].value().asNode()
 
+                // for some reason the filename comes out of the graph wrapped in extra escaped quotes sometimes
+                val fileName = fields["fileName"].toString().removePrefix("\"").removeSuffix("\"")
+
                 foundImage =
                     Image(
-                        id = UUID.fromString(fields["id"].asString()),
+                        nodeId = UUID.fromString(fields["nodeId"].asString()),
                         title = fields["title"].asString(),
                         description = fields["description"].asString(),
                         uploaderId = UUID.fromString(fields["uploaderId"].asString()),
                         uploadedAt = Instant.fromEpochSeconds(fields["uploadedAt"].asLong()),
+                        fileName = fileName,
                     )
             }
         }
@@ -183,7 +215,7 @@ class Neo4JDatabaseAccessImpl(
 
                 foundAccount =
                     Account(
-                        id = UUID.fromString(fields["id"].asString()),
+                        nodeId = UUID.fromString(fields["nodeId"].asString()),
                         userName = fields["userName"].asString(),
                         email = fields["email"].asString(),
                         createdAt = Instant.fromEpochSeconds(fields["createdAt"].asLong()),

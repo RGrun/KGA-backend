@@ -32,7 +32,7 @@ fun Application.commentManagementRoutes(commentAccess: CommentAccess) {
                 val comment = call.receive<NewCommentDTO>()
                 commentAccess.addNewComment(comment.toDomain())
 
-                call.respond(HttpStatusCode.Accepted)
+                call.respond(HttpStatusCode.Created)
             }
         }
     }

@@ -16,7 +16,7 @@ class CommentAccessImpl(
 
         val comment =
             Comment(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 authorId = newComment.authorId,
                 onImageId = newComment.onImageId,
                 text = newComment.text,

@@ -15,7 +15,7 @@ class TagsAccessImpl(
     override suspend fun addNewTag(newTag: NewTagDTO) {
         val tag =
             Tag(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 title = newTag.title,
             )
         databaseAccess.saveNode(tag)

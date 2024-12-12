@@ -23,7 +23,7 @@ class Neo4jNodeSerializerImplTest {
 
         val account =
             Account(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 userName = newAccount.userName,
                 email = newAccount.email,
                 createdAt = Clock.System.now(),
@@ -32,7 +32,7 @@ class Neo4jNodeSerializerImplTest {
 
         val auth =
             Auth(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 password = "lol",
             )
     }
@@ -40,7 +40,7 @@ class Neo4jNodeSerializerImplTest {
     @Test
     fun `serialize new account nodes`() =
         runBlocking {
-            val res = serializer.serializeCreateNode(account).query
+            val res = serializer.serializeUpsertNode(account).query
 
             assertTrue(res.contains(account.userName))
             assertTrue(res.contains(account.email))
@@ -49,9 +49,9 @@ class Neo4jNodeSerializerImplTest {
     @Test
     fun `serialize new auth nodes`() =
         runBlocking {
-            val res = serializer.serializeCreateNode(auth).query
+            val res = serializer.serializeUpsertNode(auth).query
 
-            assertTrue(res.contains(auth.id.toString()))
+            assertTrue(res.contains(auth.nodeId.toString()))
             assertTrue(res.contains(auth.password))
         }
 
@@ -59,10 +59,10 @@ class Neo4jNodeSerializerImplTest {
     fun `serialize creating relationships`() =
         runBlocking {
             RelationshipType.entries.forEach {
-                val res = serializer.serializeWithRelationship(account, auth, it)
+                val res = serializer.serializeWithRelationship(account, listOf(auth), it)
 
-                assertTrue(res.contains(account.id.toString()))
-                assertTrue(res.contains(auth.id.toString()))
+                assertTrue(res.contains(account.nodeId.toString()))
+                assertTrue(res.contains(auth.nodeId.toString()))
                 assertTrue(res.contains(it.serValue))
             }
         }

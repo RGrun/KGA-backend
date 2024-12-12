@@ -11,11 +11,18 @@ import java.util.UUID
 interface DatabaseAccess {
     suspend fun saveNode(node: Node)
 
-    suspend fun loadImageById(id: UUID): Image
+    suspend fun saveNodesBulk(nodes: List<Node>)
 
-    suspend fun loadTagById(id: UUID): Tag
+    suspend fun createImageWithTags(
+        image: Image,
+        tags: List<Tag>,
+    )
 
-    suspend fun loadCommentById(id: UUID): Comment
+    suspend fun loadImageById(nodeId: UUID): Image
+
+    suspend fun loadTagById(nodeId: UUID): Tag
+
+    suspend fun loadCommentById(nodeId: UUID): Comment
 
     suspend fun createWithRelationship(
         from: Node,
@@ -23,7 +30,7 @@ interface DatabaseAccess {
         type: RelationshipType,
     )
 
-    suspend fun loadAccountById(id: UUID): Account
+    suspend fun loadAccountById(nodeId: UUID): Account
 
     suspend fun loadAccountByEmail(email: String): Account
 

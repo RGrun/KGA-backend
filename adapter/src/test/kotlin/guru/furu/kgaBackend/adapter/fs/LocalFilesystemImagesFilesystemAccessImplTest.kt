@@ -23,7 +23,7 @@ class LocalFilesystemImagesFilesystemAccessImplTest {
 
         private val account =
             Account(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 userName = "mrGibbon",
                 email = "bananas@furu.guru",
                 createdAt = Clock.System.now(),
@@ -32,7 +32,7 @@ class LocalFilesystemImagesFilesystemAccessImplTest {
 
         private val newImage =
             NewImage(
-                uploaderAccountId = account.id,
+                uploaderAccountId = account.nodeId,
                 title = "who knows?",
                 description = "something witty here",
             )
@@ -50,14 +50,40 @@ class LocalFilesystemImagesFilesystemAccessImplTest {
     fun `test gibbon upload, no thumb`() =
         runBlocking {
             fsAccess.saveNewImage(gibbonBytes, FILENAME, newImage, true)
-            assertTrue(Path("$FS_ROOT/${account.id}/img/$FILENAME").exists())
+            assertTrue(Path("$FS_ROOT/${account.nodeId}/img/$FILENAME").exists())
         }
 
     @Test
     fun `test gibbon upload, with thumb`() =
         runBlocking {
             fsAccess.saveNewImage(gibbonBytes, FILENAME, newImage)
-            assertTrue(Path("$FS_ROOT/${account.id}/img/$FILENAME").exists())
-            assertTrue(Path("$FS_ROOT/${account.id}/thumb/$FILENAME").exists())
+            assertTrue(Path("$FS_ROOT/${account.nodeId}/img/$FILENAME").exists())
+            assertTrue(Path("$FS_ROOT/${account.nodeId}/thumb/$FILENAME").exists())
+        }
+
+    @Test
+    fun `test file loads from disk`() =
+        runBlocking {
+            fsAccess.saveNewImage(gibbonBytes, FILENAME, newImage)
+            assertTrue(Path("$FS_ROOT/${account.nodeId}/img/$FILENAME").exists())
+            assertTrue(Path("$FS_ROOT/${account.nodeId}/thumb/$FILENAME").exists())
+
+            val img =
+                fsAccess.loadImage(
+                    uploaderAccountId = account.nodeId,
+                    fileName = FILENAME,
+                    isThumb = false,
+                )
+
+            assertTrue(img.exists())
+
+            val thumb =
+                fsAccess.loadImage(
+                    uploaderAccountId = account.nodeId,
+                    fileName = FILENAME,
+                    isThumb = true,
+                )
+
+            assertTrue(thumb.exists())
         }
 }

@@ -23,7 +23,7 @@ fun NewAccountDTO.toDomain(): NewAccount =
 
 fun Account.toAccountDTO(): AccountDTO =
     AccountDTO(
-        id = this.id.toString(),
+        id = this.nodeId.toString(),
         userName = this.userName,
         email = this.email,
         lastLogin = this.lastLogin,
@@ -45,7 +45,7 @@ fun NewCommentDTO.toDomain(): NewComment =
 
 fun Comment.toDTO(): CommentDTO =
     CommentDTO(
-        id = this.id.toString(),
+        id = this.nodeId.toString(),
         authorId = this.authorId.toString(),
         onImageId = this.onImageId.toString(),
         text = this.text,
@@ -54,6 +54,6 @@ fun Comment.toDTO(): CommentDTO =
 
 fun Tag.toDTO(): TagDTO =
     TagDTO(
-        id = this.id.toString(),
+        id = this.nodeId.toString(),
         title = this.title,
     )

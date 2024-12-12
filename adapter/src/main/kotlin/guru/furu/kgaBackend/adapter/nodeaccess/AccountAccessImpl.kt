@@ -14,7 +14,7 @@ class AccountAccessImpl(
     override suspend fun saveAccount(newAccount: NewAccount) {
         val account =
             Account(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 userName = newAccount.userName,
                 email = newAccount.email,
                 createdAt = Clock.System.now(),
@@ -23,7 +23,7 @@ class AccountAccessImpl(
 
         val auth =
             Auth(
-                id = UUID.randomUUID(),
+                nodeId = UUID.randomUUID(),
                 password = newAccount.password,
             )
 

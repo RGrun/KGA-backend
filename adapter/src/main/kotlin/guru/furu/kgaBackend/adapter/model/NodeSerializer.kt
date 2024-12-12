@@ -4,11 +4,11 @@ import guru.furu.kgaBackend.domain.nodes.Node
 import java.util.UUID
 
 interface NodeSerializer {
-    suspend fun serializeCreateNode(node: Node): Neo4jNodeSerializerImpl.QueryNamePair
+    suspend fun serializeUpsertNode(node: Node): Neo4jNodeSerializerImpl.QueryNamePair
 
     suspend fun serializeWithRelationship(
         from: Node,
-        to: Node,
+        to: List<Node>,
         relationshipType: RelationshipType,
     ): String
 
@@ -17,10 +17,10 @@ interface NodeSerializer {
         matchClause: String,
     ): String
 
-    suspend fun getNodeQueryById(id: UUID): String
+    suspend fun getNodeQueryById(nodeId: UUID): String
 
     suspend fun serializeGetConnectedComponents(
-        id: UUID,
+        nodeId: UUID,
         relationshipType: RelationshipType,
         reverse: Boolean = false,
     ): String

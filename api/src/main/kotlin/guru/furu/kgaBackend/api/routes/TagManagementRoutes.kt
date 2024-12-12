@@ -24,6 +24,12 @@ fun Application.tagManagementRoutes(tagsAccess: TagsAccess) {
 
             post("/new") {
                 val tag = call.receive<NewTagDTO>()
+
+                if (tag.nodeId != null) {
+                    call.respond(HttpStatusCode.BadRequest, "This endpoint is for new tags only.")
+                    return@post
+                }
+
                 tagsAccess.addNewTag(tag)
                 call.respond(HttpStatusCode.Accepted)
             }

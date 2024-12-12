@@ -4,7 +4,7 @@ import kotlinx.datetime.Instant
 import java.util.UUID
 
 data class Account(
-    override val id: UUID,
+    override val nodeId: UUID,
     val userName: String,
     val email: String,
     val createdAt: Instant,

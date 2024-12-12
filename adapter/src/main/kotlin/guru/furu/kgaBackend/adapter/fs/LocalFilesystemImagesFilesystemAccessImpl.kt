@@ -6,12 +6,16 @@ import kotlinx.coroutines.withContext
 import net.coobird.thumbnailator.Thumbnails
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.UUID
 
 class LocalFilesystemImagesFilesystemAccessImpl(
     private val localRoot: String,
+    private val thumbnailWidth: Int = 320,
+    private val thumbnailHeight: Int = 240,
 ) : ImagesFilesystemAccess {
     override suspend fun saveNewImage(
         fileBytes: ByteArray,
@@ -33,8 +37,10 @@ class LocalFilesystemImagesFilesystemAccessImpl(
                 val thumbPath = pathImgRoot + "thumb/"
                 val thumbFilePath = "$thumbPath/$fileName"
                 val outputStream = ByteArrayOutputStream()
+
+                // TODO: this library can't handle webp files, need an alternative for them
                 Thumbnails.of(File(fullFilePath))
-                    .size(640, 480)
+                    .size(thumbnailWidth, thumbnailHeight)
                     .toOutputStream(outputStream)
 
                 Files.createDirectories(Paths.get(thumbPath))
@@ -47,9 +53,23 @@ class LocalFilesystemImagesFilesystemAccessImpl(
     }
 
     override suspend fun loadImage(
+        uploaderAccountId: UUID,
         fileName: String,
         isThumb: Boolean,
     ): File {
-        TODO("Not yet implemented")
+        val path =
+            if (isThumb) {
+                "$localRoot/$uploaderAccountId/thumb/$fileName"
+            } else {
+                "$localRoot/$uploaderAccountId/img/$fileName"
+            }
+
+        val file = File(path)
+
+        if (!file.exists()) {
+            throw FileNotFoundException()
+        }
+
+        return File(path)
     }
 }

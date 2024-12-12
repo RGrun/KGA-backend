@@ -18,7 +18,7 @@ interface DatabaseAccess {
         tags: List<Tag>,
     )
 
-    suspend fun loadImageById(nodeId: UUID): Image
+    suspend fun loadImageById(nodeId: UUID): Image?
 
     suspend fun loadTagById(nodeId: UUID): Tag
 
@@ -30,9 +30,9 @@ interface DatabaseAccess {
         type: RelationshipType,
     )
 
-    suspend fun loadAccountById(nodeId: UUID): Account
+    suspend fun loadAccountById(nodeId: UUID): Account?
 
-    suspend fun loadAccountByEmail(email: String): Account
+    suspend fun loadAccountByEmail(email: String): Account?
 
     suspend fun loadCommentsForImage(imageId: UUID): List<Comment>
 

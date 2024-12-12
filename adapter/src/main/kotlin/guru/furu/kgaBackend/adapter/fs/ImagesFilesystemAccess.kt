@@ -2,7 +2,7 @@ package guru.furu.kgaBackend.adapter.fs
 
 import guru.furu.kgaBackend.domain.nodes.incoming.NewImage
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 interface ImagesFilesystemAccess {
     suspend fun saveNewImage(

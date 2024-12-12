@@ -12,5 +12,5 @@ interface ImagesAccess {
         tags: List<NewTagDTO>?,
     )
 
-    suspend fun fetchImageDetails(imageId: UUID): Image
+    suspend fun fetchImageDetails(imageId: UUID): Image?
 }

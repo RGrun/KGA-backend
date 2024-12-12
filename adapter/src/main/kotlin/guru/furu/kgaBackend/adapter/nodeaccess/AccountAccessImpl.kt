@@ -31,4 +31,6 @@ class AccountAccessImpl(
     }
 
     override suspend fun loadAccountByEmail(email: String): Account? = databaseAccess.loadAccountByEmail(email)
+
+    override suspend fun loadAccountById(nodeId: UUID): Account? = databaseAccess.loadAccountById(nodeId)
 }

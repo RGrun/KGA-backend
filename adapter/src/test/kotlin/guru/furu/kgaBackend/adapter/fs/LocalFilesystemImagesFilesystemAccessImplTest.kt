@@ -11,6 +11,7 @@ import kotlin.io.path.Path
 import kotlin.io.path.exists
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertFails
 
 class LocalFilesystemImagesFilesystemAccessImplTest {
     companion object {
@@ -59,6 +60,17 @@ class LocalFilesystemImagesFilesystemAccessImplTest {
             fsAccess.saveNewImage(gibbonBytes, FILENAME, newImage)
             assertTrue(Path("$FS_ROOT/${account.nodeId}/img/$FILENAME").exists())
             assertTrue(Path("$FS_ROOT/${account.nodeId}/thumb/$FILENAME").exists())
+        }
+
+    @Test
+    fun `throw on duplicate filename for account`(): Unit =
+        runBlocking {
+            fsAccess.saveNewImage(gibbonBytes, FILENAME, newImage)
+            assertTrue(Path("$FS_ROOT/${account.nodeId}/img/$FILENAME").exists())
+
+            assertFails {
+                fsAccess.saveNewImage(gibbonBytes, FILENAME, newImage)
+            }
         }
 
     @Test

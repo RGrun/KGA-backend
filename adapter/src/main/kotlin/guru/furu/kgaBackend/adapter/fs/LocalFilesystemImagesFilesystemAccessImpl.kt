@@ -14,8 +14,8 @@ import java.util.UUID
 
 class LocalFilesystemImagesFilesystemAccessImpl(
     private val localRoot: String,
-    private val thumbnailWidth: Int = 320,
-    private val thumbnailHeight: Int = 240,
+    private val thumbnailWidth: Int = 160,
+    private val thumbnailHeight: Int = 120,
 ) : ImagesFilesystemAccess {
     override suspend fun saveNewImage(
         fileBytes: ByteArray,
@@ -28,6 +28,11 @@ class LocalFilesystemImagesFilesystemAccessImpl(
         withContext(Dispatchers.IO) {
             val fileNameImg = pathImgRoot + "img/"
             val fullFilePath = fileNameImg + fileName
+
+            if (File(fullFilePath).exists()) {
+                error("file $fileName already exists for this account!")
+            }
+
             Files.createDirectories(Paths.get(fileNameImg))
             FileOutputStream(fullFilePath).use {
                 it.write(fileBytes)

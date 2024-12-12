@@ -26,7 +26,7 @@ fun Application.module() {
             serializer = Neo4jNodeSerializerImpl(),
         )
 
-    val accountManager = AccountAccessImpl(databaseAccess = graphDatabaseAccess)
+    val accountAccess = AccountAccessImpl(databaseAccess = graphDatabaseAccess)
 
     val imagesAccess = ImagesAccessImpl(graphDatabaseAccess)
     val filesystemAccess = LocalFilesystemImagesFilesystemAccessImpl("R:/kga/images")
@@ -38,8 +38,8 @@ fun Application.module() {
     configureSerialization()
     configureSecurity()
     configureRouting()
-    accountManagementRoutes(accountManager)
-    imageManagementRoutes(imagesAccess, filesystemAccess)
+    accountManagementRoutes(accountAccess)
+    imageManagementRoutes(imagesAccess, accountAccess, filesystemAccess)
     commentManagementRoutes(commentAccess)
     tagManagementRoutes(tagsAccess)
 }

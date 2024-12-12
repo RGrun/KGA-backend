@@ -1,6 +1,7 @@
 package guru.furu.kgaBackend.api.routes
 
 import guru.furu.kgaBackend.adapter.fs.ImagesFilesystemAccess
+import guru.furu.kgaBackend.adapter.nodeaccess.AccountAccess
 import guru.furu.kgaBackend.adapter.nodeaccess.ImagesAccess
 import guru.furu.kgaBackend.adapter.toDomain
 import guru.furu.kgaBackend.client.dto.incoming.NewImageDTO
@@ -24,6 +25,7 @@ import java.util.UUID
 
 fun Application.imageManagementRoutes(
     imagesAccess: ImagesAccess,
+    accountAccess: AccountAccess,
     imagesFilesystemAccess: ImagesFilesystemAccess,
     imageUploadMetadataFieldName: String = "uploadMetadata",
     imageUploadTagsFieldName: String = "tags",
@@ -72,13 +74,18 @@ fun Application.imageManagementRoutes(
 
                 val newImage = newImageDTO?.toDomain() ?: error("Could not parse new image data!")
 
+                if (accountAccess.loadAccountById(newImage.uploaderAccountId) == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Specified uploader account could not be found.")
+                    return@post
+                }
+
+                imagesAccess.recordNewImage(fileNameNotNull, newImage, tagsDTO)
+
                 imagesFilesystemAccess.saveNewImage(
                     fileBytes = outputStream.toByteArray(),
                     fileName = fileNameNotNull,
                     newImage = newImage,
                 )
-
-                imagesAccess.recordNewImage(fileNameNotNull, newImage, tagsDTO)
 
                 call.respond(HttpStatusCode.Created)
             }

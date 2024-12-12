@@ -17,7 +17,9 @@ class ImagesAccessImpl(
         newImage: NewImage,
         tags: List<NewTagDTO>?,
     ) {
-        val uploaderAccount = databaseAccess.loadAccountById(newImage.uploaderAccountId)
+        val uploaderAccount =
+            databaseAccess.loadAccountById(newImage.uploaderAccountId)
+                ?: error("Could not find account with id: ${newImage.uploaderAccountId}!")
 
         val imageRecord =
             Image(
@@ -44,5 +46,5 @@ class ImagesAccessImpl(
         databaseAccess.createImageWithTags(imageRecord, tagNodes ?: emptyList())
     }
 
-    override suspend fun fetchImageDetails(imageId: UUID): Image = databaseAccess.loadImageById(imageId)
+    override suspend fun fetchImageDetails(imageId: UUID): Image? = databaseAccess.loadImageById(imageId)
 }

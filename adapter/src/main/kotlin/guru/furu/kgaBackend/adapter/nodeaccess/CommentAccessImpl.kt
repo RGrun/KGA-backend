@@ -11,8 +11,13 @@ class CommentAccessImpl(
     private val databaseAccess: DatabaseAccess,
 ) : CommentAccess {
     override suspend fun addNewComment(newComment: NewComment) {
-        val author = databaseAccess.loadAccountById(newComment.authorId)
-        val image = databaseAccess.loadImageById(newComment.onImageId)
+        val author =
+            databaseAccess.loadAccountById(newComment.authorId)
+                ?: error("Could not find account with id: ${newComment.authorId}!")
+
+        val image =
+            databaseAccess.loadImageById(newComment.onImageId)
+                ?: error("Could not find image with id: ${newComment.onImageId}")
 
         val comment =
             Comment(

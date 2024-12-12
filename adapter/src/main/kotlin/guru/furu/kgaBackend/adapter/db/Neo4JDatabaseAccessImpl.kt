@@ -65,7 +65,7 @@ class Neo4JDatabaseAccessImpl(
         }
     }
 
-    override suspend fun loadImageById(nodeId: UUID): Image {
+    override suspend fun loadImageById(nodeId: UUID): Image? {
         val className = Image::class.simpleName ?: error("Could not get class name!")
         val query = serializer.serializeMatchQuery(className, "nodeId: '$nodeId'")
 
@@ -95,14 +95,14 @@ class Neo4JDatabaseAccessImpl(
         }
     }
 
-    override suspend fun loadAccountById(nodeId: UUID): Account {
+    override suspend fun loadAccountById(nodeId: UUID): Account? {
         val className = Account::class.simpleName ?: error("Could not get class name!")
         val query = serializer.serializeMatchQuery(className, "nodeId: '$nodeId'")
 
         return loadAccountByQueryString(query)
     }
 
-    override suspend fun loadAccountByEmail(email: String): Account {
+    override suspend fun loadAccountByEmail(email: String): Account? {
         val className = Account::class.simpleName ?: error("Could not get class name!")
         val query = serializer.serializeMatchQuery(className, "email: '$email'")
 
@@ -173,7 +173,7 @@ class Neo4JDatabaseAccessImpl(
     }
 
     // TODO: do these better in a more generic way so I don't need one func per Node type
-    private fun loadImageByQueryString(query: String): Image {
+    private fun loadImageByQueryString(query: String): Image? {
         var foundImage: Image? = null
 
         database.session().use {
@@ -199,10 +199,10 @@ class Neo4JDatabaseAccessImpl(
             }
         }
 
-        return foundImage ?: error("Could not load image! query: $query")
+        return foundImage
     }
 
-    private fun loadAccountByQueryString(query: String): Account {
+    private fun loadAccountByQueryString(query: String): Account? {
         var foundAccount: Account? = null
 
         database.session().use {
@@ -224,6 +224,6 @@ class Neo4JDatabaseAccessImpl(
             }
         }
 
-        return foundAccount ?: error("Could not load account! query: $query")
+        return foundAccount
     }
 }

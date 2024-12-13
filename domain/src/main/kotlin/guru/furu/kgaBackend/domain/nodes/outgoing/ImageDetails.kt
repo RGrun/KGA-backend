@@ -5,6 +5,8 @@ import guru.furu.kgaBackend.domain.nodes.Tag
 import kotlinx.datetime.Instant
 import java.util.UUID
 
+// this represents the detailed breakdown of an image, for
+// displaying on the image's full page
 data class ImageDetails(
     val uploaderAccountId: UUID,
     val imageFilePath: String,

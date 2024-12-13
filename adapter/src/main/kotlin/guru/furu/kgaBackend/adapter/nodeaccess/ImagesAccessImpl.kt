@@ -74,7 +74,7 @@ class ImagesAccessImpl(
                 uploaderAccountId = accountId,
                 uploadedDate = it.uploadedAt,
                 title = it.title,
-                filePath = "/$accountId/img/${it.fileName}",
+                filePath = "/$accountId/thumb/${it.fileName}",
             )
         }
     }

@@ -6,6 +6,8 @@ import guru.furu.kgaBackend.client.dto.incoming.NewTagDTO
 import guru.furu.kgaBackend.domain.nodes.Image
 import guru.furu.kgaBackend.domain.nodes.Tag
 import guru.furu.kgaBackend.domain.nodes.incoming.NewImage
+import guru.furu.kgaBackend.domain.nodes.outgoing.ImageDetails
+import guru.furu.kgaBackend.domain.nodes.outgoing.ImageSummary
 import kotlinx.datetime.Clock
 import java.util.UUID
 
@@ -46,5 +48,34 @@ class ImagesAccessImpl(
         databaseAccess.createImageWithTags(imageRecord, tagNodes ?: emptyList())
     }
 
-    override suspend fun fetchImageDetails(imageId: UUID): Image? = databaseAccess.loadImageById(imageId)
+    override suspend fun fetchImageDetails(imageId: UUID): ImageDetails? {
+        val image =
+            databaseAccess.loadImageById(imageId)
+                ?: return null
+
+        val comments = databaseAccess.loadCommentsForImage(imageId)
+        val tags = databaseAccess.loadTagsForImage(imageId)
+
+        return ImageDetails(
+            uploaderAccountId = image.uploaderId,
+            imageFilePath = "/${image.uploaderId}/img/${image.fileName}",
+            comments = comments,
+            tags = tags,
+            title = image.title,
+            uploadedAt = image.uploadedAt,
+        )
+    }
+
+    override suspend fun fetchImagesForAccount(accountId: UUID): List<ImageSummary> {
+        val images = databaseAccess.loadImagesForAccount(accountId)
+
+        return images.map {
+            ImageSummary(
+                uploaderAccountId = accountId,
+                uploadedDate = it.uploadedAt,
+                title = it.title,
+                filePath = "/$accountId/img/${it.fileName}",
+            )
+        }
+    }
 }

@@ -3,6 +3,7 @@ package guru.furu.kgaBackend.api.routes
 import guru.furu.kgaBackend.adapter.fs.ImagesFilesystemAccess
 import guru.furu.kgaBackend.adapter.nodeaccess.AccountAccess
 import guru.furu.kgaBackend.adapter.nodeaccess.ImagesAccess
+import guru.furu.kgaBackend.adapter.toDTO
 import guru.furu.kgaBackend.adapter.toDomain
 import guru.furu.kgaBackend.client.dto.incoming.NewImageDTO
 import guru.furu.kgaBackend.client.dto.incoming.NewTagDTO
@@ -32,7 +33,6 @@ fun Application.imageManagementRoutes(
 ) {
     routing {
         route("/images") {
-            // TODO support adding tags during upload
             post("/upload") {
                 // retrieve all multipart data (suspending)
                 val multipart = call.receiveMultipart()
@@ -108,6 +108,36 @@ fun Application.imageManagementRoutes(
                 } else {
                     call.respond(HttpStatusCode.NotFound)
                 }
+            }
+
+            get("/by-image-id/{imageId}") {
+                val imageId =
+                    call.parameters["imageId"]
+                        .let { UUID.fromString(it) }
+                        ?: error("Could not parse imageId")
+
+                val imageDetails = imagesAccess.fetchImageDetails(imageId)
+
+                if (imageDetails != null) {
+                    val imageDetailsDTO = imageDetails.toDTO()
+                    call.respond(imageDetailsDTO)
+                } else {
+                    call.respond(HttpStatusCode.NotFound, "Image not found for id: $imageId")
+                    return@get
+                }
+            }
+
+            get("/by-uploader-id/{uploaderId}") {
+                val uploaderId =
+                    call.parameters["uploaderId"]
+                        .let { UUID.fromString(it) }
+                        ?: error("Could not parse uploaderId")
+
+                val imagesForAccount =
+                    imagesAccess.fetchImagesForAccount(uploaderId)
+                        .map { it.toDTO() }
+
+                call.respond(imagesForAccount)
             }
         }
     }

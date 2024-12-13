@@ -37,4 +37,6 @@ interface DatabaseAccess {
     suspend fun loadCommentsForImage(imageId: UUID): List<Comment>
 
     suspend fun loadTagsForImage(imageId: UUID): List<Tag>
+
+    suspend fun loadImagesForAccount(accountId: UUID): List<Image>
 }

@@ -2,7 +2,6 @@ package guru.furu.kgaBackend.api
 
 import guru.furu.kgaBackend.adapter.db.Neo4JDatabaseAccessImpl
 import guru.furu.kgaBackend.adapter.fs.LocalFilesystemImagesFilesystemAccessImpl
-import guru.furu.kgaBackend.adapter.model.Neo4jNodeSerializerImpl
 import guru.furu.kgaBackend.adapter.nodeaccess.AccountAccessImpl
 import guru.furu.kgaBackend.adapter.nodeaccess.CommentAccessImpl
 import guru.furu.kgaBackend.adapter.nodeaccess.ImagesAccessImpl
@@ -23,7 +22,6 @@ fun Application.module() {
             uri = "bolt://localhost:7687",
             username = "testuser",
             password = "testuser",
-            serializer = Neo4jNodeSerializerImpl(),
         )
 
     val accountAccess = AccountAccessImpl(databaseAccess = graphDatabaseAccess)
